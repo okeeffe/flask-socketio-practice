@@ -11,11 +11,14 @@
 
     <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.2/socket.io.min.js"></script>
     <script type="text/javascript" charset="utf-8">
+      var ENTER_KEYCODE = 13;
+      var catchUpReceived = false;
+
       var msgsBox = document.getElementById('msgs-box');
 
       var chatBox = document.getElementById('msg-input');
       chatBox.addEventListener('keyup', function(e) {
-        if(e.keyCode === 13) {
+        if(e.keyCode === ENTER_KEYCODE) {
           submitButton.click();
         }
       });
@@ -26,19 +29,32 @@
         chatBox.value = '';
       });
 
+      function createAndAppendMsg(msgJson) {
+        var newMsgP = document.createElement('p');
+        newMsgP.innerHTML = msgJson.name + ': ' + msgJson.msg;
+        msgsBox.append(newMsgP);
+      }
+
       var socket = io.connect('http://' + document.domain + ':' + location.port);
       socket.on('connect', function() {
-          socket.emit('connected', {data: 'I\'m connected!'});
+        socket.emit('connected', {data: 'I\'m connected!'});
+      });
+      socket.on('catch-up', function(data) {
+        if(catchUpReceived === false) {
+          var msgs = JSON.parse(data);
+          console.log(msgs);
+          for(var i = 0; i < msgs.length; i++) {
+            createAndAppendMsg(msgs[i]);
+          }
+          catchUpReceived = true;
+        }
       });
       socket.on('notification', function(msg) {
         console.log(msg);
       });
       socket.on('msg', function(msgJson) {
-        var json = JSON.parse(msgJson);
-        console.log(json);
-        var newMsgP = document.createElement('p');
-        newMsgP.innerHTML = json.name + ': ' + json.msg;
-        msgsBox.append(newMsgP);
-      })
+        msgJson = JSON.parse(msgJson);
+        createAndAppendMsg(msgJson);
+      });
     </script>
   </body>
