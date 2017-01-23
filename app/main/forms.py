@@ -1,10 +1,10 @@
-from flask_wtf import Form
-from wtforms import TextField, SubmitField
+from flask_wtf import FlaskForm
+from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired
 
 
-class LoginForm(Form):
-    name = TextField(
+class LoginForm(FlaskForm):
+    name = StringField(
         'Name',
         description='Enter your name',
         validators=[DataRequired()]

@@ -8,6 +8,7 @@ def index():
     form = LoginForm()
     if form.validate_on_submit():
         session['name'] = form.name.data
+        session['room'] = 'test_room'
         return redirect(url_for('.sockets'))
     elif request.method == "GET":
         form.name.data = session.get('name', '')
@@ -16,4 +17,8 @@ def index():
 
 @main.route('/sockets')
 def sockets():
+    name = session.get('name', '')
+    room = session.get('room', '')
+    if not name or not room:
+        return redirect(url_for('.index'))
     return render_template('sockets.html')
