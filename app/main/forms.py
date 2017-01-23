@@ -9,4 +9,9 @@ class LoginForm(FlaskForm):
         description='Enter your name',
         validators=[DataRequired()]
     )
-    submit = SubmitField('Enter Chatroom')
+    room = StringField(
+        'Room',
+        description='Enter your room name',
+        validators=[DataRequired()]
+    )
+    submit = SubmitField('Enter Room')
