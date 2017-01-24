@@ -17,7 +17,7 @@ def handle_connection(received):
 
     data = {}
     data['msg'] = '{} has joined the room'.format(name)
-    data['name'] = 'SERVER'
+    data['name'] = 'Server'
     json_data = json.dumps(data)
 
     emit('catch-up', json.dumps(msgs[room]))
@@ -30,7 +30,6 @@ def handle_msg(received):
     Broadcasts the message to the room."""
     name = session.get('name')
     room = session.get('room')
-    print('received json from {}: {}'.format(name, str(received)))
 
     data = {}
     data['msg'] = received
@@ -51,7 +50,7 @@ def handle_leave():
 
     data = {}
     data['msg'] = '{} has left the room'.format(name)
-    data['name'] = 'SERVER'
+    data['name'] = 'Server'
     json_data = json.dumps(data)
 
     emit('notification', json_data, room=room)

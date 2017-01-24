@@ -55,6 +55,10 @@ button.danger:hover {
   background: var(--messages-base);
   border-radius: 5px;
 }
+.msgs-box > ul {
+  list-style: none;
+  padding: 0;
+}
 
 .msg {
   padding: 10px;
@@ -103,4 +107,8 @@ input[type="text"] {
   flex-direction: row;
   flex: 0 0 auto;
   justify-content: space-between;
+}
+
+[ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+  display: none !important;
 }
