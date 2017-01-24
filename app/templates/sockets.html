@@ -46,6 +46,10 @@
           socket.emit('leave');
         });
 
+        window.onload = function(e) {
+          chatBox.focus();
+        };
+
         function createAndAppendMsg(msgJson) {
           var newMsgDiv = document.createElement('div'),
               newMsgNameDiv = document.createElement('div'),

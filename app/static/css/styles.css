@@ -2,10 +2,13 @@
   --base: #C2C4E8;
   --messages-base: #FFFFFA;
   --message-name: #6C70C1;
+  --message-name-hover: #4F528D;
   --header-color: #363747;
   --text-color: #363747;
   --border-color: #AAABBC;
   --danger: #A51327;
+  --danger-hover: #881020;
+  --white: #fff;
 }
 
 body {
@@ -22,7 +25,7 @@ h1 {
 button,
 input[type="submit"] {
   background-color: var(--message-name);
-  color: #fff;
+  color: var(--white);
   border: 0;
   padding: 5px 10px;
   border-radius: 2px;
@@ -34,10 +37,10 @@ button.danger {
 
 button:hover,
 input[type="submit"]:hover {
-  background-color: #4F528D;
+  background-color: var(--message-name-hover);
 }
 button.danger:hover {
-  background-color: #881020;
+  background-color: var(--danger-hover);
 }
 
 .chat-room {
