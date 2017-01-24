@@ -7,6 +7,12 @@ app.config(['$interpolateProvider', function($interpolateProvider) {
 }]);
 
 app.controller('mainController', ['$scope', '$log', function($scope, $log) {
+  /* TODO:
+
+  - directive for focus on chat input box on page load
+  - directive for scrolling the chatbox appropriately on receipt of new messages
+  */
+
   $scope.init = function(username) {
     $scope.USERNAME = username;
   }
