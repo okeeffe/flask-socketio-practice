@@ -7,13 +7,7 @@ var app = angular.module('app', []);
     $interpolateProvider.endSymbol('a}');
   }]);
 
-  app.controller('mainController', ['$scope', '$log', function($scope, $log) {
-    /* TODO:
-
-    - directive for focus on chat input box on page load
-    - directive for scrolling the chatbox appropriately on receipt of new messages
-    */
-
+  app.controller('mainController', ['$scope', function($scope) {
     $scope.init = function(username) {
       $scope.USERNAME = username;
     }
@@ -65,6 +59,7 @@ var app = angular.module('app', []);
     });
   }]);
 
+  // Directive to focus the input textbox on load in an Angular way
   app.directive('focusOnLoad', function() {
     function link(scope, element, attrs) {
       element[0].focus();
@@ -76,6 +71,7 @@ var app = angular.module('app', []);
     };
   });
 
+  // Directive to scroll the chat box to the bottom based on watching the linked-to $scope var
   app.directive('scrollBottomWhen', ['$timeout', function($timeout) {
     function debounce(func, wait, immediate) {
       var timeout;

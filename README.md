@@ -4,7 +4,7 @@ Messing around with Flask-SocketIO for some real-time goodness.
 
 Inspired by [@miguelgrinberg](https://github.com/miguelgrinberg)'s [Flask-SocketIO-Chat](https://github.com/miguelgrinberg/Flask-SocketIO-Chat) project (particularly in project format, which I think Miguel is ace at).
 
-I'm also taking the opportunity to get more comfortable with things like CSS vars, Flexbox layouts and probably a few different front-end technologies.
+I'm also taking the opportunity to get more comfortable with things like CSS vars, Flexbox layouts and a few different front-end technologies.
 
 ### Running it
 
