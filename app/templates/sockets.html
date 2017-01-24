@@ -1,18 +1,24 @@
 <html>
   <head>
     <title>{{ room }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}" />
   </head>
   <body>
-    <h1>Room: {{ room }}</h1>
+    <div class="chat-room">
+      <h1>{{ room }}</h1>
 
-    <div class="messages" id="msgs-box"></div>
+      <div class="msgs-box" id="msgs-box"></div>
 
-    <span>Logged in as: {{ name }}</span>&nbsp;<input type="text" id="msg-input" />
-    <button type="button" id="submit-btn">Send</button>
+      <div class="inputs">
+        <input type="text" class="msg-input" id="msg-input" placeholder="Enter your message" />
+        <button type="button" class="submit-btn" id="submit-btn">Send</button>
+      </div>
 
-    <br>
-
-    <button type="button" id="leave-btn">Leave Room</button>
+      <div class="misc">
+        <span class="logged-in-as">Logged in as {{ name }}</span>
+        <button type="button" id="leave-btn" class="danger">Leave Room</button>
+      </div>
+    </div>
 
     <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.2/socket.io.min.js"></script>
     <script type="text/javascript" charset="utf-8">
@@ -41,9 +47,35 @@
         });
 
         function createAndAppendMsg(msgJson) {
-          var newMsgP = document.createElement('p');
-          newMsgP.innerHTML = msgJson.name + ': ' + msgJson.msg;
-          msgsBox.append(newMsgP);
+          var newMsgDiv = document.createElement('div'),
+              newMsgNameDiv = document.createElement('div'),
+              newMsgTextDiv = document.createElement('div');
+
+          newMsgDiv.classList.add('msg');
+          if(msgJson.name === 'SERVER') {
+            newMsgDiv.classList.add('server');
+          }
+          if(msgJson.name === '{{name}}') {
+            newMsgDiv.classList.add('me');
+          }
+
+          newMsgNameDiv.classList.add('name');
+          newMsgTextDiv.classList.add('text');
+
+          newMsgNameDiv.innerHTML = msgJson.name;
+          newMsgTextDiv.innerHTML = msgJson.msg;
+
+          newMsgDiv.append(newMsgNameDiv);
+          newMsgDiv.append(newMsgTextDiv);
+          msgsBox.append(newMsgDiv);
+
+          // Scroll to view most recent message
+          msgsBox.scrollTop = msgsBox.scrollHeight;
+        }
+
+        function handleServerMsg(msgJson) {
+          msgJson = JSON.parse(msgJson);
+          createAndAppendMsg(msgJson);
         }
 
         var socket = io.connect('http://' + document.domain + ':' + location.port);
@@ -53,7 +85,6 @@
         socket.on('catch-up', function(data) {
           if(catchUpReceived === false) {
             var msgs = JSON.parse(data);
-            console.log(msgs);
             for(var i = 0; i < msgs.length; i++) {
               createAndAppendMsg(msgs[i]);
             }
@@ -61,12 +92,10 @@
           }
         });
         socket.on('notification', function(msgJson) {
-          msgJson = JSON.parse(msgJson);
-          createAndAppendMsg(msgJson);
+          handleServerMsg(msgJson);
         });
         socket.on('msg', function(msgJson) {
-          msgJson = JSON.parse(msgJson);
-          createAndAppendMsg(msgJson);
+          handleServerMsg(msgJson);
         });
         socket.on('left', function() {
           window.location = 'http://' + document.domain + ':' + location.port;

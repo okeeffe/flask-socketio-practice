@@ -19,10 +19,9 @@ def handle_connection(received):
     data['msg'] = '{} has joined the room'.format(name)
     data['name'] = 'SERVER'
     json_data = json.dumps(data)
-    msgs[room].append(data)
 
-    emit('notification', json_data, room=room)
     emit('catch-up', json.dumps(msgs[room]))
+    emit('notification', json_data, room=room)
 
 
 @socketio.on('msg')
@@ -54,7 +53,6 @@ def handle_leave():
     data['msg'] = '{} has left the room'.format(name)
     data['name'] = 'SERVER'
     json_data = json.dumps(data)
-    msgs[room].append(data)
 
     emit('notification', json_data, room=room)
     emit('left', 'You\'re outta there!')
