@@ -7,7 +7,7 @@
     <div class="chat-room" ng-controller="mainController" ng-init="init('{{ name }}')">
       <h1>{{ room }}</h1>
 
-      <div class="msgs-box" id="msgs-box" ng-cloak>
+      <div class="msgs-box" id="msgs-box" scroll-bottom-when="messages.length" ng-cloak>
         <ul>
           <li class="msg" ng-repeat="message in messages" ng-class="{ server: message.name === 'Server', me: message.name === USERNAME }">
             <div class="name">{a message.name a}</div>
@@ -17,13 +17,13 @@
       </div>
 
       <div class="inputs">
-        <input type="text" class="msg-input" id="msg-input" placeholder="Enter your message" ng-model="inputText" ng-keyup="keyUpInInputBox($event)" />
+        <input type="text" class="msg-input" id="msg-input" placeholder="Enter your message" ng-model="inputText" ng-keyup="keyUpInInputBox($event)" focus-on-load />
         <button type="button" class="submit-btn" id="submit-btn" ng-click="sendMsg()">Send</button>
       </div>
 
       <div class="misc">
         <span class="logged-in-as">Logged in <span id="username" ng-cloak>as {a USERNAME a}</span></span>
-        <button type="button" id="leave-btn" class="danger">Leave Room</button>
+        <button type="button" id="leave-btn" class="danger" ng-click="leaveRoom()">Leave Room</button>
       </div>
     </div>
 

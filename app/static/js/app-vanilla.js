@@ -1,31 +1,68 @@
 (function() {
-  var ENTER_KEYCODE = 13;
-  var USERNAME = document.getElementById('username').innerHTML;
-  var SOCKET = io.connect('http://' + document.domain + ':' + location.port);
+  var ENTER_KEYCODE = 13,
+      USERNAME = document.getElementById('username').innerHTML,
+      SOCKET = {},
+      USERSCROLLED = false;
 
-  var msgsBox = document.getElementById('msgs');
+  var msgsBox = document.getElementById('msgs-box'),
+      msgsUl = document.getElementById('msgs'),
+      chatBox = document.getElementById('msg-input'),
+      submitButton = document.getElementById('submit-btn'),
+      leaveButton = document.getElementById('leave-btn');
 
-  var chatBox = document.getElementById('msg-input');
-  chatBox.addEventListener('keyup', function(e) {
-    if(e.keyCode === ENTER_KEYCODE) {
-      submitButton.click();
-    }
-  });
+  function initListeners() {
+    chatBox.addEventListener('keyup', function(e) {
+      if(e.keyCode === ENTER_KEYCODE) {
+        submitButton.click();
+      }
+    });
 
-  var submitButton = document.getElementById('submit-btn');
-  submitButton.addEventListener('click', function(e) {
-    SOCKET.emit('msg', chatBox.value);
-    chatBox.value = '';
-  });
+    submitButton.addEventListener('click', function(e) {
+      SOCKET.emit('msg', chatBox.value);
+      chatBox.value = '';
+    });
 
-  var leaveButton = document.getElementById('leave-btn');
-  leaveButton.addEventListener('click', function(e) {
-    SOCKET.emit('leave');
-  });
+    leaveButton.addEventListener('click', function(e) {
+      SOCKET.emit('leave');
+    });
+
+    msgsBox.addEventListener('scroll', handleMsgsBoxScroll());
+  }
 
   window.onload = function(e) {
+    initSocket();
+    initListeners();
     chatBox.focus();
   };
+
+  function debounce(func, wait, immediate) {
+    var timeout;
+    return function() {
+      var context = this,
+          args = arguments;
+
+      var later = function() {
+        timeout = null;
+        if (!immediate) func.apply(context, args);
+      };
+
+      var callNow = immediate && !timeout;
+      clearTimeout(timeout);
+      timeout = setTimeout(later, wait);
+      if (callNow) func.apply(context, args);
+    };
+  };
+
+  function handleMsgsBoxScroll() {
+    return debounce(function() {
+      // Divide offsetHeight by less to increase margin for what's considered "bottom"
+      if(msgsBox.scrollTop + (msgsBox.offsetHeight / 5) >= (msgsBox.scrollHeight - msgsBox.offsetHeight)) {
+        USERSCROLLED = false;
+      } else {
+        USERSCROLLED = true;
+      }
+    }, 250);
+  }
 
   function createAndAppendMsg(msgJson) {
     var newMsgLi = document.createElement('li'),
@@ -48,10 +85,12 @@
 
     newMsgLi.append(newMsgNameDiv);
     newMsgLi.append(newMsgTextDiv);
-    msgsBox.append(newMsgLi);
+    msgsUl.append(newMsgLi);
 
-    // Scroll to view most recent message
-    msgsBox.scrollTop = msgsBox.scrollHeight;
+    if(!USERSCROLLED) {
+      // Scroll to view most recent message
+      msgsBox.scrollTop = msgsBox.scrollHeight;
+    }
   }
 
   function handleMsg(msgJson) {
@@ -59,26 +98,29 @@
     createAndAppendMsg(msgJson);
   }
 
-  SOCKET.on('connect', function() {
-    SOCKET.emit('connected', {data: 'I\'m connected!'});
-  });
+  function initSocket() {
+    SOCKET = io.connect('http://' + document.domain + ':' + location.port);
+    SOCKET.on('connect', function() {
+      SOCKET.emit('connected', {data: 'I\'m connected!'});
+    });
 
-  SOCKET.on('catch-up', function(data) {
-    var msgs = JSON.parse(data);
-    for(var i = 0; i < msgs.length; i++) {
-      createAndAppendMsg(msgs[i]);
-    }
-  });
+    SOCKET.on('catch-up', function(data) {
+      var msgs = JSON.parse(data);
+      for(var i = 0; i < msgs.length; i++) {
+        createAndAppendMsg(msgs[i]);
+      }
+    });
 
-  SOCKET.on('notification', function(msgJson) {
-    handleMsg(msgJson);
-  });
+    SOCKET.on('notification', function(msgJson) {
+      handleMsg(msgJson);
+    });
 
-  SOCKET.on('msg', function(msgJson) {
-    handleMsg(msgJson);
-  });
+    SOCKET.on('msg', function(msgJson) {
+      handleMsg(msgJson);
+    });
 
-  SOCKET.on('left', function() {
-    window.location = 'http://' + document.domain + ':' + location.port;
-  });
+    SOCKET.on('left', function() {
+      window.location = 'http://' + document.domain + ':' + location.port;
+    });
+  }
 })();
