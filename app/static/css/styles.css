@@ -1,0 +1,106 @@
+:root {
+  --base: #C2C4E8;
+  --messages-base: #FFFFFA;
+  --message-name: #6C70C1;
+  --message-name-hover: #4F528D;
+  --header-color: #363747;
+  --text-color: #363747;
+  --border-color: #AAABBC;
+  --danger: #A51327;
+  --danger-hover: #881020;
+  --white: #fff;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  font-size: 16px;
+  background: var(--base);
+  color: var(--text-color);
+}
+
+h1 {
+  color: var(--header-color);
+}
+
+button,
+input[type="submit"] {
+  background-color: var(--message-name);
+  color: var(--white);
+  border: 0;
+  padding: 5px 10px;
+  border-radius: 2px;
+  cursor: pointer;
+}
+button.danger {
+  background-color: var(--danger);
+}
+
+button:hover,
+input[type="submit"]:hover {
+  background-color: var(--message-name-hover);
+}
+button.danger:hover {
+  background-color: var(--danger-hover);
+}
+
+.chat-room {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.msgs-box {
+  border: 1px solid var(--border-color);
+  overflow-y: auto;
+  background: var(--messages-base);
+  border-radius: 5px;
+}
+
+.msg {
+  padding: 10px;
+}
+.msg.server,
+.logged-in-as {
+  opacity: 0.4;
+}
+
+.msg .name {
+  color: var(--message-name);
+  font-size: 0.8em;
+}
+.msg.me .name {
+  color: var(--danger);
+}
+
+.msg .text {
+  padding: 5px;
+}
+
+.inputs {
+  display: inline-flex;
+  flex-direction: row;
+  justify-content: space-around;
+  flex: 0 0 auto;
+  padding: 10px 0;
+}
+.inputs > div {
+  display: inline-block;
+}
+input[type="text"] {
+  flex: 1;
+  margin-right: 5px;
+  padding: 10px 5px;
+  font-size: 1em;
+  border: 1px solid var(--border-color);
+  border-radius: 3px;
+}
+.inputs .submit-btn {
+}
+
+.misc {
+  padding-top: 20px;
+  display: inline-flex;
+  flex-direction: row;
+  flex: 0 0 auto;
+  justify-content: space-between;
+}

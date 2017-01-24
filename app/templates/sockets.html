@@ -1,60 +1,109 @@
 <html>
   <head>
     <title>{{ room }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}" />
   </head>
   <body>
-    <h1>Room: {{ room }}</h1>
-    <div class="messages" id="msgs-box">
+    <div class="chat-room">
+      <h1>{{ room }}</h1>
+
+      <div class="msgs-box" id="msgs-box"></div>
+
+      <div class="inputs">
+        <input type="text" class="msg-input" id="msg-input" placeholder="Enter your message" />
+        <button type="button" class="submit-btn" id="submit-btn">Send</button>
+      </div>
+
+      <div class="misc">
+        <span class="logged-in-as">Logged in as {{ name }}</span>
+        <button type="button" id="leave-btn" class="danger">Leave Room</button>
+      </div>
     </div>
-    <span>Logged in as: {{ name }}</span>&nbsp;<input type="text" id="msg-input" />
-    <button type="button" id="submit-btn">Send</button>
 
     <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.2/socket.io.min.js"></script>
     <script type="text/javascript" charset="utf-8">
-      var ENTER_KEYCODE = 13;
-      var catchUpReceived = false;
+      (function() {
+        var ENTER_KEYCODE = 13;
+        var catchUpReceived = false;
 
-      var msgsBox = document.getElementById('msgs-box');
+        var msgsBox = document.getElementById('msgs-box');
 
-      var chatBox = document.getElementById('msg-input');
-      chatBox.addEventListener('keyup', function(e) {
-        if(e.keyCode === ENTER_KEYCODE) {
-          submitButton.click();
-        }
-      });
-
-      var submitButton = document.getElementById('submit-btn');
-      submitButton.addEventListener('click', function(e) {
-        socket.emit('msg', chatBox.value);
-        chatBox.value = '';
-      });
-
-      function createAndAppendMsg(msgJson) {
-        var newMsgP = document.createElement('p');
-        newMsgP.innerHTML = msgJson.name + ': ' + msgJson.msg;
-        msgsBox.append(newMsgP);
-      }
-
-      var socket = io.connect('http://' + document.domain + ':' + location.port);
-      socket.on('connect', function() {
-        socket.emit('connected', {data: 'I\'m connected!'});
-      });
-      socket.on('catch-up', function(data) {
-        if(catchUpReceived === false) {
-          var msgs = JSON.parse(data);
-          console.log(msgs);
-          for(var i = 0; i < msgs.length; i++) {
-            createAndAppendMsg(msgs[i]);
+        var chatBox = document.getElementById('msg-input');
+        chatBox.addEventListener('keyup', function(e) {
+          if(e.keyCode === ENTER_KEYCODE) {
+            submitButton.click();
           }
-          catchUpReceived = true;
+        });
+
+        var submitButton = document.getElementById('submit-btn');
+        submitButton.addEventListener('click', function(e) {
+          socket.emit('msg', chatBox.value);
+          chatBox.value = '';
+        });
+
+        var leaveButton = document.getElementById('leave-btn');
+        leaveButton.addEventListener('click', function(e) {
+          socket.emit('leave');
+        });
+
+        window.onload = function(e) {
+          chatBox.focus();
+        };
+
+        function createAndAppendMsg(msgJson) {
+          var newMsgDiv = document.createElement('div'),
+              newMsgNameDiv = document.createElement('div'),
+              newMsgTextDiv = document.createElement('div');
+
+          newMsgDiv.classList.add('msg');
+          if(msgJson.name === 'SERVER') {
+            newMsgDiv.classList.add('server');
+          }
+          if(msgJson.name === '{{name}}') {
+            newMsgDiv.classList.add('me');
+          }
+
+          newMsgNameDiv.classList.add('name');
+          newMsgTextDiv.classList.add('text');
+
+          newMsgNameDiv.innerHTML = msgJson.name;
+          newMsgTextDiv.innerHTML = msgJson.msg;
+
+          newMsgDiv.append(newMsgNameDiv);
+          newMsgDiv.append(newMsgTextDiv);
+          msgsBox.append(newMsgDiv);
+
+          // Scroll to view most recent message
+          msgsBox.scrollTop = msgsBox.scrollHeight;
         }
-      });
-      socket.on('notification', function(msg) {
-        console.log(msg);
-      });
-      socket.on('msg', function(msgJson) {
-        msgJson = JSON.parse(msgJson);
-        createAndAppendMsg(msgJson);
-      });
+
+        function handleServerMsg(msgJson) {
+          msgJson = JSON.parse(msgJson);
+          createAndAppendMsg(msgJson);
+        }
+
+        var socket = io.connect('http://' + document.domain + ':' + location.port);
+        socket.on('connect', function() {
+          socket.emit('connected', {data: 'I\'m connected!'});
+        });
+        socket.on('catch-up', function(data) {
+          if(catchUpReceived === false) {
+            var msgs = JSON.parse(data);
+            for(var i = 0; i < msgs.length; i++) {
+              createAndAppendMsg(msgs[i]);
+            }
+            catchUpReceived = true;
+          }
+        });
+        socket.on('notification', function(msgJson) {
+          handleServerMsg(msgJson);
+        });
+        socket.on('msg', function(msgJson) {
+          handleServerMsg(msgJson);
+        });
+        socket.on('left', function() {
+          window.location = 'http://' + document.domain + ':' + location.port;
+        });
+      })();
     </script>
   </body>
