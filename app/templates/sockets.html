@@ -4,57 +4,73 @@
   </head>
   <body>
     <h1>Room: {{ room }}</h1>
-    <div class="messages" id="msgs-box">
-    </div>
+
+    <div class="messages" id="msgs-box"></div>
+
     <span>Logged in as: {{ name }}</span>&nbsp;<input type="text" id="msg-input" />
     <button type="button" id="submit-btn">Send</button>
 
+    <br>
+
+    <button type="button" id="leave-btn">Leave Room</button>
+
     <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.2/socket.io.min.js"></script>
     <script type="text/javascript" charset="utf-8">
-      var ENTER_KEYCODE = 13;
-      var catchUpReceived = false;
+      (function() {
+        var ENTER_KEYCODE = 13;
+        var catchUpReceived = false;
 
-      var msgsBox = document.getElementById('msgs-box');
+        var msgsBox = document.getElementById('msgs-box');
 
-      var chatBox = document.getElementById('msg-input');
-      chatBox.addEventListener('keyup', function(e) {
-        if(e.keyCode === ENTER_KEYCODE) {
-          submitButton.click();
-        }
-      });
-
-      var submitButton = document.getElementById('submit-btn');
-      submitButton.addEventListener('click', function(e) {
-        socket.emit('msg', chatBox.value);
-        chatBox.value = '';
-      });
-
-      function createAndAppendMsg(msgJson) {
-        var newMsgP = document.createElement('p');
-        newMsgP.innerHTML = msgJson.name + ': ' + msgJson.msg;
-        msgsBox.append(newMsgP);
-      }
-
-      var socket = io.connect('http://' + document.domain + ':' + location.port);
-      socket.on('connect', function() {
-        socket.emit('connected', {data: 'I\'m connected!'});
-      });
-      socket.on('catch-up', function(data) {
-        if(catchUpReceived === false) {
-          var msgs = JSON.parse(data);
-          console.log(msgs);
-          for(var i = 0; i < msgs.length; i++) {
-            createAndAppendMsg(msgs[i]);
+        var chatBox = document.getElementById('msg-input');
+        chatBox.addEventListener('keyup', function(e) {
+          if(e.keyCode === ENTER_KEYCODE) {
+            submitButton.click();
           }
-          catchUpReceived = true;
+        });
+
+        var submitButton = document.getElementById('submit-btn');
+        submitButton.addEventListener('click', function(e) {
+          socket.emit('msg', chatBox.value);
+          chatBox.value = '';
+        });
+
+        var leaveButton = document.getElementById('leave-btn');
+        leaveButton.addEventListener('click', function(e) {
+          socket.emit('leave');
+        });
+
+        function createAndAppendMsg(msgJson) {
+          var newMsgP = document.createElement('p');
+          newMsgP.innerHTML = msgJson.name + ': ' + msgJson.msg;
+          msgsBox.append(newMsgP);
         }
-      });
-      socket.on('notification', function(msg) {
-        console.log(msg);
-      });
-      socket.on('msg', function(msgJson) {
-        msgJson = JSON.parse(msgJson);
-        createAndAppendMsg(msgJson);
-      });
+
+        var socket = io.connect('http://' + document.domain + ':' + location.port);
+        socket.on('connect', function() {
+          socket.emit('connected', {data: 'I\'m connected!'});
+        });
+        socket.on('catch-up', function(data) {
+          if(catchUpReceived === false) {
+            var msgs = JSON.parse(data);
+            console.log(msgs);
+            for(var i = 0; i < msgs.length; i++) {
+              createAndAppendMsg(msgs[i]);
+            }
+            catchUpReceived = true;
+          }
+        });
+        socket.on('notification', function(msgJson) {
+          msgJson = JSON.parse(msgJson);
+          createAndAppendMsg(msgJson);
+        });
+        socket.on('msg', function(msgJson) {
+          msgJson = JSON.parse(msgJson);
+          createAndAppendMsg(msgJson);
+        });
+        socket.on('left', function() {
+          window.location = 'http://' + document.domain + ':' + location.port;
+        });
+      })();
     </script>
   </body>
