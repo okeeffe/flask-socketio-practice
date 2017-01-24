@@ -39,22 +39,20 @@ app.controller('mainController', ['$scope', '$log', function($scope, $log) {
 
   SOCKET.on('catch-up', function(data) {
     var msgs = JSON.parse(data);
-    for(var i = 0; i < msgs.length; i++) {
-      $scope.$apply(function() {
-        $scope.messages.push(msgs[i]);
-      });
-    }
+    $scope.$apply(function() {
+      $scope.messages = $scope.messages.concat(msgs);
+    });
   });
 
   SOCKET.on('notification', function(msgJson) {
     $scope.$apply(function() {
-      $scope.messages.push(JSON.parse(msgJson));
+      $scope.messages = $scope.messages.concat(JSON.parse(msgJson));
     });
   });
 
   SOCKET.on('msg', function(msgJson) {
     $scope.$apply(function() {
-      $scope.messages.push(JSON.parse(msgJson));
+      $scope.messages = $scope.messages.concat(JSON.parse(msgJson));
     });
   });
 
