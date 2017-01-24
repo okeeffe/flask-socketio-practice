@@ -15,4 +15,14 @@ I'm also taking the opportunity to get more comfortable with things like CSS var
 4. `python run.py`
 5. Head to [localhost:5000](localhost:5000) in your browser(s) of choice
 
+### Various Frontends
+
+All front-ends at the moment make use of [socket.io](http://socket.io) for nicer front-end sockets.
+
+1. Vanilla JS powered chat-room runs at `/sockets`
+2. Angular 1-powered chat-room runs at `/sockets-ng`
+3. TODO: React
+4. TODO: Vue2
+5. TODO: Angular 2
+
 Tested on Python 2.7.13, no reason why it wouldn't also work on other versions.
