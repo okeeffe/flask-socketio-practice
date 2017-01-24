@@ -1,0 +1,33 @@
+<html ng-app="app">
+  <head>
+    <title>{{ room }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}" />
+  </head>
+  <body>
+    <div class="chat-room" ng-controller="mainController" ng-init="init('{{ name }}')">
+      <h1>{{ room }}</h1>
+
+      <div class="msgs-box" id="msgs-box" ng-cloak>
+        <ul>
+          <li class="msg" ng-repeat="message in messages" ng-class="{ server: message.name === 'Server', me: message.name === USERNAME }">
+            <div class="name">{a message.name a}</div>
+            <div class="text">{a message.msg a}</div>
+          </li>
+        </ul>
+      </div>
+
+      <div class="inputs">
+        <input type="text" class="msg-input" id="msg-input" placeholder="Enter your message" ng-model="inputText" ng-keyup="keyUpInInputBox($event)" />
+        <button type="button" class="submit-btn" id="submit-btn" ng-click="sendMsg()">Send</button>
+      </div>
+
+      <div class="misc">
+        <span class="logged-in-as">Logged in <span id="username" ng-cloak>as {a USERNAME a}</span></span>
+        <button type="button" id="leave-btn" class="danger">Leave Room</button>
+      </div>
+    </div>
+
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.2/socket.io.min.js"></script>
+    <script type="text/javascript" src="//code.angularjs.org/1.6.0-rc.2/angular.min.js"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/app-ng.js') }}"></script>
+  </body>

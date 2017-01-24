@@ -22,3 +22,12 @@ def sockets():
     if not name or not room:
         return redirect(url_for('.index'))
     return render_template('sockets.html', name=name, room=room)
+
+
+@main.route('/sockets-ng')
+def sockets_ng():
+    name = session.get('name', '')
+    room = session.get('room', '')
+    if not name or not room:
+        return redirect(url_for('.index'))
+    return render_template('sockets-ng.html', name=name, room=room)
