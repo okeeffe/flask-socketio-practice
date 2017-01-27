@@ -1,7 +1,9 @@
 from flask import Flask
 from flask_socketio import SocketIO
+import redis
 
 socketio = SocketIO()
+redis_db = redis.StrictRedis(host="localhost")
 
 
 def create_app(debug=False):

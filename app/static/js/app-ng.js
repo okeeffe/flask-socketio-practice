@@ -14,7 +14,8 @@ var app = angular.module('app', []);
     $scope.messages = [];
     $scope.inputText = '';
 
-    var SOCKET = io.connect('http://' + document.domain + ':' + location.port);
+    var SOCKET = io.connect('http://' + document.domain + ':' + location.port),
+        RECEIVED_CATCHUP = false;
 
     $scope.sendMsg = function(e) {
       SOCKET.emit('msg', $scope.inputText);
@@ -36,10 +37,13 @@ var app = angular.module('app', []);
     });
 
     SOCKET.on('catch-up', function(data) {
-      var msgs = JSON.parse(data);
-      $scope.$apply(function() {
-        $scope.messages = $scope.messages.concat(msgs);
-      });
+      if(!RECEIVED_CATCHUP) {
+        var msgs = JSON.parse(data);
+        $scope.$apply(function() {
+          $scope.messages = $scope.messages.concat(msgs);
+        });
+        RECEIVED_CATCHUP = true;
+      }
     });
 
     SOCKET.on('notification', function(msgJson) {
