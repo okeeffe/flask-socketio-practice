@@ -4,7 +4,7 @@ Messing around with Flask-SocketIO for some real-time goodness.
 
 Inspired by [@miguelgrinberg](https://github.com/miguelgrinberg)'s [Flask-SocketIO-Chat](https://github.com/miguelgrinberg/Flask-SocketIO-Chat) project (particularly in project format, which I think Miguel is ace at).
 
-I'm also taking the opportunity to get more comfortable with things like CSS vars, Flexbox layouts and a few different front-end technologies.
+I'm also taking the opportunity to get more comfortable with things like CSS vars, Flexbox layouts, Redis and a few different front-end technologies.
 
 ### Running it
 
@@ -12,8 +12,10 @@ I'm also taking the opportunity to get more comfortable with things like CSS var
 2. `virtualenv venv` to set up a virtualenv (`pip install virtualenv` if you don't already have it)
 3. `. venv/bin/activate`
 4. `pip install -r requirements.txt`
-4. `python run.py`
-5. Head to [localhost:5000](localhost:5000) in your browser(s) of choice
+5. If you don't already have Redis installed, install it (`brew install redis` on macOS)
+6. `redis-server` to start a local Redis server for message storage
+7. `python run.py`
+8. Head to [localhost:5000](localhost:5000) in your browser(s) of choice
 
 ### Various Frontends
 

@@ -1,10 +1,7 @@
 from flask import session
 from flask_socketio import emit, join_room, leave_room
 import json
-from collections import defaultdict
-from .. import socketio
-
-msgs = defaultdict(list)
+from .. import socketio, redis_db
 
 
 @socketio.on('connected')
@@ -20,7 +17,9 @@ def handle_connection(received):
     data['name'] = 'Server'
     json_data = json.dumps(data)
 
-    emit('catch-up', json.dumps(msgs[room]))
+    msgs_so_far = [json.loads(msg) for msg in redis_db.lrange(room, 0, -1)]
+    if msgs_so_far:
+        emit('catch-up', json.dumps(msgs_so_far))
     emit('notification', json_data, room=room)
 
 
@@ -31,13 +30,24 @@ def handle_msg(received):
     name = session.get('name')
     room = session.get('room')
 
-    data = {}
-    data['msg'] = received
-    data['name'] = name
-    json_data = json.dumps(data)
-    msgs[room].append(data)
+    if received == 'BURN IT ALL':
+        data = {}
+        data['msg'] = ('All historical messages deleted for room: '
+                       '{}').format(room)
+        data['name'] = 'Server'
+        json_data = json.dumps(data)
 
-    emit('msg', json_data, room=room)
+        redis_db.delete(room)
+        emit('notification', json_data, room=room)
+    else:
+        data = {}
+        data['msg'] = received
+        data['name'] = name
+        json_data = json.dumps(data)
+        redis_db.rpush(room, json.dumps(data))
+        redis_db.ltrim(room, 0, 99)
+
+        emit('msg', json_data, room=room)
 
 
 @socketio.on('leave')

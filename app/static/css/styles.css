@@ -54,6 +54,7 @@ button.danger:hover {
   overflow-y: auto;
   background: var(--messages-base);
   border-radius: 5px;
+  min-height: 30vh;
 }
 .msgs-box > ul {
   list-style: none;
