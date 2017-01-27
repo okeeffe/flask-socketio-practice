@@ -2,6 +2,7 @@
   var ENTER_KEYCODE = 13,
       USERNAME = document.getElementById('username').innerHTML,
       SOCKET = {},
+      RECEIVED_CATCHUP = false,
       USERSCROLLED = false;
 
   var msgsBox = document.getElementById('msgs-box'),
@@ -105,9 +106,12 @@
     });
 
     SOCKET.on('catch-up', function(data) {
-      var msgs = JSON.parse(data);
-      for(var i = 0; i < msgs.length; i++) {
-        createAndAppendMsg(msgs[i]);
+      if(!RECEIVED_CATCHUP) {
+        var msgs = JSON.parse(data);
+        for(var i = 0; i < msgs.length; i++) {
+          createAndAppendMsg(msgs[i]);
+        }
+        RECEIVED_CATCHUP = true;
       }
     });
 
