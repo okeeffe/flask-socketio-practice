@@ -30,12 +30,6 @@
     msgsBox.addEventListener('scroll', handleMsgsBoxScroll());
   }
 
-  window.onload = function(e) {
-    initSocket();
-    initListeners();
-    chatBox.focus();
-  };
-
   function debounce(func, wait, immediate) {
     var timeout;
     return function() {
@@ -127,4 +121,10 @@
       window.location = 'http://' + document.domain + ':' + location.port;
     });
   }
+
+  window.onload = function(e) {
+    initSocket();
+    initListeners();
+    chatBox.focus();
+  };
 })();
